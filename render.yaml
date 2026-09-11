@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: resolv-backend
+    runtime: node
+    rootDir: society-resume
+    buildCommand: npm install && npx prisma db push
+    startCommand: node server.js
+    envVars:
+      - key: PORT
+        value: 5000
+      - key: AI_PROVIDER
+        value: groq
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: GROQ_API_KEY
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
