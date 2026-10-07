@@ -7,6 +7,7 @@ The core backend service for Resolv, powering authentication, complaint manageme
 * Runtime: Node.js and Express
 * Database: PostgreSQL with Prisma ORM
 * AI Engine: Decoupled client supporting Groq Cloud LPU inference and local Ollama or vLLM deployments
+* Vector Embeddings: In-process `@huggingface/transformers` (`all-MiniLM-L6-v2`) for semantic search
 * Notifications: Resend transactional email API
 * File Storage: Multer with timestamped random hash sanitization
 * Security: Parameterized SQL execution guardrails, scoped CORS, and JWT authentication
@@ -15,9 +16,10 @@ The core backend service for Resolv, powering authentication, complaint manageme
 
 1. Automated Categorization and Priority: Tags incoming complaints based on semantic content.
 2. Image Inspection: Validates uploaded photos for issue relevance before submission.
-3. Duplicate Detection: Checks new complaints against existing records to flag duplicates.
+3. Duplicate Detection: Two-stage retrieval pipeline using local dense vector embeddings and cosine similarity to filter top candidates before LLM verification (replaces prompt-stuffing).
 4. Suggested Admin Responses: Recommends contextual resolution messages for administrators.
 5. Text-to-SQL (Query AI): Converts natural language operations queries into safe PostgreSQL read queries.
+6. Automated Text-to-SQL Evaluation: Benchmark harness with 20 test cases verifying execution rate, semantic result accuracy, and AST safety filters.
 
 ## Getting Started
 
@@ -65,6 +67,9 @@ npm run dev
 
 # Production
 npm start
+
+# Run Text-to-SQL automated evaluation benchmark
+npm run eval:sql
 ```
 
 The server listens on `http://localhost:5000`.

@@ -142,13 +142,15 @@ Return ONLY the JSON. No markdown, no backticks, no explanation.
 const isSafeQuery = (sql) => {
   // Block destructive SQL keywords
   const forbidden = /\b(INSERT|UPDATE|DELETE|DROP|ALTER|TRUNCATE|GRANT|REVOKE|CREATE|COPY|EXECUTE|DO|CALL|SET|VACUUM|REINDEX|CLUSTER|COMMENT|SECURITY|OWNER)\b/i;
-  // Block password selection
-  const selectsPassword = /SELECT[\s\S]*\bpassword\b[\s\S]*FROM/i;
+  // Block password anywhere in the query (covers subqueries, aliases, CTEs)
+  const mentionsPassword = /\bpassword\b/i;
+  // Block SELECT * to prevent implicit password column inclusion
+  const selectStar = /\bSELECT\b\s*\*/i;
   // Block dangerous PostgreSQL functions
   const dangerousFunctions = /\b(pg_read_file|pg_write_file|pg_sleep|pg_terminate_backend|pg_cancel_backend|lo_import|lo_export|dblink|copy_to|copy_from)\s*\(/i;
   // Block multiple statements (semicolons followed by more SQL)
   const multiStatement = /;\s*\S/;
-  return !forbidden.test(sql) && !selectsPassword.test(sql) && !dangerousFunctions.test(sql) && !multiStatement.test(sql);
+  return !forbidden.test(sql) && !mentionsPassword.test(sql) && !selectStar.test(sql) && !dangerousFunctions.test(sql) && !multiStatement.test(sql);
 };
 
 const { chatCompletion, cleanSQL, extractJson } = require("../services/aiClient");
@@ -276,4 +278,4 @@ const naturalLanguageQuery = async (req, res) => {
   }
 };
 
-module.exports = { naturalLanguageQuery };
+module.exports = { naturalLanguageQuery, SCHEMA_DESCRIPTION, isSafeQuery };

@@ -5,17 +5,18 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "eval:sql": "node eval/run-eval.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@huggingface/transformers": "^4.3.1",
     "@prisma/client": "6.19",
     "axios": "^1.13.3",
     "bcrypt": "^6.0.0",
-
     "cors": "^2.8.6",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",

@@ -32,6 +32,7 @@ model Complaint {
   urgencyScore Int?
   location     String?
   notes        String?  
+  embedding    Float[]  @default([])
 }
 
 model Notification {

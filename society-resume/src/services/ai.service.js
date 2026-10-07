@@ -45,7 +45,7 @@ Rules for flagging as duplicate:
 - The issue must be clearly the same (e.g. both about water leaking, both about broken elevator)
 - The location must also match (e.g. same flat number, same common area like lobby or parking)
 - If the new complaint has no location and an existing one does, do NOT flag as duplicate
-- If both have no location but the issue is identical, flag as duplicate
+- If both have no location but the issue is identical, do NOT flag as duplicate
 - Common area complaints (lobby, parking, rooftop) are duplicates only if they describe the exact same issue in the exact same area
 - Different flat numbers = NOT a duplicate even if the issue is the same
 

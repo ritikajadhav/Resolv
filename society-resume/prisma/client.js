@@ -1,3 +1,7 @@
 const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
+// Omit the 384-float embedding from API responses by default; it is only
+// read explicitly (via `select`) by the duplicate-detection service.
+const prisma = new PrismaClient({
+  omit: { complaint: { embedding: true } },
+});
 module.exports = prisma;

@@ -7,13 +7,16 @@ Resolv is an AI-assisted complaint management and society operations platform bu
 * Frontend: React 18, Vite, Tailwind CSS, TanStack Query, Zustand
 * Backend: Node.js, Express, Prisma ORM, PostgreSQL
 * AI Service: Decoupled adapter supporting Groq Cloud LPU inference and local Ollama or vLLM deployments
+* Vector Embeddings & Similarity: Local in-process sentence embeddings (`all-MiniLM-L6-v2`) with cosine similarity retrieval for high-speed duplicate detection
 * Notifications: Resend transactional email API
 
 ## Core Features
 
 * Resident Portal: Ticket filing with photo attachments, AI image pre-analysis, real-time status tracking, and notification bell.
+* Duplicate Detection: Two-stage retrieval pipeline using local dense vector embeddings and cosine similarity to prune candidates before final LLM confirmation.
 * Admin Operations Center: Lifecycle triage queue (Open, In Progress, Resolved), action confirmations, duplicate detection, and suggested resolution responses.
 * Query AI (Text-to-SQL): Converts natural language operational questions into secure PostgreSQL queries with executive insight summaries.
+* Text-to-SQL Benchmark Evaluation: Automated evaluation suite with 20 benchmark test cases testing execution accuracy, result matching, and safety refusal guardrails in an isolated PostgreSQL schema.
 * Role-Based Access Control: Dedicated interfaces for residents and administrators with in-app role promotion and demotion.
 
 ## Quick Start
@@ -49,6 +52,11 @@ node seed-admin.js
 Start the backend server:
 ```bash
 npm run dev
+```
+
+(Optional) Run Text-to-SQL automated benchmark evaluation:
+```bash
+npm run eval:sql
 ```
 
 ### 3. Frontend Setup

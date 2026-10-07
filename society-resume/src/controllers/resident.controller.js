@@ -8,6 +8,11 @@ const {
   analyzeImage,
 } = require("../services/ai.service");
 const { sendComplaintSubmittedEmail } = require("../services/email.service");
+const {
+  embedText,
+  complaintToText,
+  findSimilarComplaints,
+} = require("../services/embedding.service");
 
 // Analyze image before submission (human-in-the-loop step 1)
 const analyzeComplaintImage = async (req, res) => {
@@ -55,13 +60,29 @@ const createComplaint = async (req, res) => {
       return res.status(400).json({ message: "Description is required" });
     }
 
-    // Step 1: Check for duplicates
+    // Step 1: Check for duplicates (embedding retrieval -> LLM confirmation)
     const openComplaints = await prisma.complaint.findMany({
       where: { status: "OPEN" },
-      select: { id: true, title: true, description: true, location: true },
+      select: { id: true, title: true, description: true, location: true, embedding: true },
     });
 
-    const duplicateCheck = await checkDuplicate(title, description, location, openComplaints);
+    let newEmbedding = null;
+    let candidates = openComplaints;
+    try {
+      newEmbedding = await embedText(
+        complaintToText({ title: title.trim(), description: description.trim(), location })
+      );
+      candidates = await findSimilarComplaints(newEmbedding, openComplaints);
+      console.log(
+        `[Duplicate] ${openComplaints.length} open -> ${candidates.length} candidates`,
+        candidates.map((c) => `#${c.id}:${c.similarity.toFixed(2)}`)
+      );
+    } catch (embErr) {
+      // Fallback: embeddings unavailable, send all open complaints to the LLM
+      console.error("Embedding retrieval failed, falling back to full LLM check:", embErr.message);
+    }
+
+    const duplicateCheck = await checkDuplicate(title, description, location, candidates);
     if (duplicateCheck.isDuplicate) {
       return res.status(409).json({
         message: "A similar complaint is already open for this location.",
@@ -90,6 +111,7 @@ const createComplaint = async (req, res) => {
         userId: req.user.id,
         category: finalCategory,
         priority,
+        embedding: newEmbedding || [],
       },
     });
 

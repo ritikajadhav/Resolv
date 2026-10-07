@@ -18,6 +18,9 @@ build/
 # Uploads and temporary data
 society-resume/uploads/*
 !society-resume/uploads/.gitkeep
+migrate-to-neon.js
+society-resume/migrate-to-neon.js
+society-resume/eval/results/
 
 # Logs
 *.log
